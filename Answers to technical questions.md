@@ -32,4 +32,16 @@ $('#table-devices').DataTable({pageLength: 25, responsive: true, });
 
 *Please describe yourself using JSON.*
 
-**Hola soy uti**
+~~~json
+{"name":"John",
+"last_name": "Camacho", 
+"age" : 24,
+"birthday": "27-08-1993",
+"personality": "Extroverted",
+"motto": "What happens is convenient",
+"priorities":["God","Family","Studies","Work"],
+"values":["Honesty","Integrity","Loyalty","Humility","Respectful"],
+"sports":["Soccer","Swimming","Ping Pong"],
+"hobbies":["Play Videogames","Play Guitar","Mounting theatre productions"]}
+~~~
+
