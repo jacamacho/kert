@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>KERT | Knetik Engineer Recruitment Test</title>
+
+    <link href="theme/css/bootstrap.min.css" rel="stylesheet">
+    <link href="theme/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="theme/css/animate.css" rel="stylesheet">
+    <link href="theme/css/style.css" rel="stylesheet">
+    <link href="theme/css/plugins/dataTables/datatables.min.css" rel="stylesheet">
+</head>
+
+<body class="top-navigation">
+
+    <div id="wrapper">
+        <div id="page-wrapper" class="gray-bg">
+            <div class="row border-bottom white-bg">
+                <nav class="navbar navbar-static-top" role="navigation">
+                    <div class="navbar-header">
+                        <button aria-controls="navbar" aria-expanded="false" data-target="#navbar" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
+                    <i class="fa fa-reorder"></i>
+                </button>
+                        <a href="#" class="navbar-brand">KERT</a>
+                    </div>
+                    <div class="navbar-collapse collapse" id="navbar">
+                        <ul class="nav navbar-nav">
+                            <li class="active">
+                                <a aria-expanded="false" role="button" href="index.html"> Welcome to My Knetik Engineer Recruitment Test</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="wrapper wrapper-content">
+                <div class="container pagecontent">
+                    <div class="row paneldetailview" style="display: none">
+                        <div class="col-lg-12">
+                            <button type="button" class="btn btn-w-m btn-primary" onclick="AllDevices()">See All Devices</button>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="panel panel-success">
+                                <div class="panel-heading">
+                                    Details of Device
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            ID: <label id="idlabel"></label><br> MAC Address: <label id="maclabel"></label><br> Location: <label id="loclabel"></label><br>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            Parent Location: <label id="parloclabel"></label><br> Updated At: <label id="ualabel"></label><br> Signal: <label id="signlabel"></label><br> Connected: <label id="connlabel"></label><br>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row labeldetail">
+                        <div class="col-lg-12">
+                            <center><h1>Information of near Devices</h1></center>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="table-responsive">
+                                <table id="table-devices" class="table table-striped table-bordered table-hover ">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Parent Location</th>
+                                            <th>Location</th>
+                                            <th>Connected</th>
+                                            <th>Signal</th>
+                                            <th>Updated At</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table-data">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="pageespera" style="display: none">
+                    <div class="sk-spinner sk-spinner-wave">
+                        <div class="sk-rect1"></div>
+                        <div class="sk-rect2"></div>
+                        <div class="sk-rect3"></div>
+                        <div class="sk-rect4"></div>
+                        <div class="sk-rect5"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div>
+                    <strong>John Andrés Camacho</strong>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <script src="theme/js/jquery-2.1.1.js"></script>
+    <script src="theme/js/bootstrap.min.js"></script>
+    <script src="theme/js/plugins/dataTables/datatables.min.js"></script>
+
+    <!-- Page-Level Scripts -->
+    <script>
+        AllDevices();
+
+        function AllDevices() {
+            $('#table-devices').DataTable().destroy();
+            $(".pagecontent").hide();
+            $(".pageespera").show();
+            $(".paneldetailview").hide();
+            $("#table-data").empty();
+            $(".labeldetail").hide();
+            $.get('https://recruitment-test-api.devsandbox.knetikcloud.com/devices', {}, function(returnedData) {
+                if (returnedData["content"].length > 0) {
+                    returnedData["content"].forEach(function(device) {
+                        if (device["connected"] == true) var colorstring = "green.png";
+                        else var colorstring = "red.png";
+                        $("#table-data").append("<tr><td>" + device["id"] + "</td><td>" + device["parent_location"] + "</td><td>" + device["location"] + "</td><td><label style='display:none'>" + device["connected"] + "</label><center><img width='10%' src='theme/img/" + colorstring + "'></center></td><td>" + device["signal"] + "</td><td>" + device["updated_at"] + "</td><td><center><button onclick='filterD(\"" + device["id"] + "\")' class='btn btn-primary btn-circle btn-lg' type='button'><i class='fa fa-info'></i></button></center></td></tr>");
+                    });
+                    $('#table-devices').DataTable({
+                        pageLength: 25,
+                        responsive: true,
+                        fixedColumns: true
+                    });
+                } else
+                    alert("Existió un error. Por favor actualice la ventana");
+            }).done(function() {
+                $(".pagecontent").show();
+                $(".pageespera").hide();
+            });
+        }
+
+        function filterD(info) {
+            var devicelocation = "";
+            $('#table-devices').DataTable().destroy();
+            $(".pagecontent").hide();
+            $(".paneldetailview").show();
+            $(".labeldetail").show();
+            $(".pageespera").show();
+            $("#idlabel").empty();
+            $("#maclabel").empty();
+            $("#loclabel").empty();
+            $("#parloclabel").empty();
+            $("#ualabel").empty();
+            $("#signlabel").empty();
+            $("#connlabel").empty();
+            $("#table-data").empty();
+            $.get('https://recruitment-test-api.devsandbox.knetikcloud.com/devices?filter=id:' + info, {}, function(returnedData) {
+                returnedData["content"].forEach(function(device) {
+                    devicelocation = device["location"];
+                    $("#idlabel").append(device["id"]);
+                    $("#maclabel").append(device["mac_address"]);
+                    $("#loclabel").append(device["location"]);
+                    $("#parloclabel").append(device["parent_location"]);
+                    $("#ualabel").append(device["updated_at"]);
+                    $("#signlabel").append(device["signal"]);
+                    $("#connlabel").append(device["connected"]);
+                });
+            }).done(function() {
+                $.get('https://recruitment-test-api.devsandbox.knetikcloud.com/devices?filter=location:' + devicelocation, {}, function(returnedData) {
+                    console.log(returnedData);
+                    returnedData["content"].forEach(function(device) {
+                        if (device["connected"] == true) var colorstring = "green.png";
+                        else var colorstring = "red.png";
+                        $("#table-data").append("<tr><td>" + device["id"] + "</td><td>" + device["parent_location"] + "</td><td>" + device["location"] + "</td><td><label style='display:none'>" + device["connected"] + "</label><center><img width='10%' src='theme/img/" + colorstring + "'></center></td><td>" + device["signal"] + "</td><td>" + device["updated_at"] + "</td><td><center><button onclick='filterD(\"" + device["id"] + "\")' class='btn btn-primary btn-circle btn-lg' type='button'><i class='fa fa-info'></i></button></center></td></tr>");
+                    });
+                    $('#table-devices').DataTable({
+                        pageLength: 25,
+                        responsive: true,
+                    });
+                }).done(function() {
+                    $(".pagecontent").show();
+                    $(".pageespera").hide();
+                });
+            });
+        }
+
+    </script>
+
+</body>
+
+</html>
